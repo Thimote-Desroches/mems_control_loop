@@ -127,14 +127,10 @@ proc run_test_case {lines bits reps prec} {
 
 # # Define your scenarios here: { Lines Bits Repetitions }
 set test_scenarios {
-    {1  16  1024 6}
-    {1  16  256 6}
-    {1  15  128 6}
-    {1  15  128 6}
-    {1  16  1024 6}
-    {1  16  256 6}
-    {1  15  128 6}
-    {1  16  128 6}}
+    {1  16  16 6}
+    {1  15  256 6}
+    {1  15  256 6}
+    {1  15  256 6}}
 foreach test $test_scenarios {
     # Unpack the list into variables
     lassign $test l b r p

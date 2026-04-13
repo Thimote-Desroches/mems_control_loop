@@ -1,52 +1,3 @@
--- Le processus combinatoire nettoyé
--- comb_process : process (present_state, enable, reset, accumulationCounter, addrCounter) is
--- begin
---     -- ÉTAPE A : Valeurs par défaut (sécurité anti-latch)
---     next_state                     <= present_state;
---     enable_accuReg                 <= '0';
---     accumulation_counter_reset_sig <= '1';
---     addrCounter_reset_sig          <= '1';
---     enable_sig                     <= '0';
---     enable_divAide_sig              <= '0';
---     reset_divide_sig               <= '1';
-
---     -- ÉTAPE B : Logique par état
---     case present_state is
---         when idle =>
---             if enable = '1' then
---                 next_state <= accumulation;
---             end if;
-
---         when accumulation =>
---             enable_accuReg                 <= '1';
---             accumulation_counter_reset_sig <= '0';
---             enable_sig                     <= '1';
-
---             if reset = '0' or enable = '0' then
---                 next_state <= idle;
---             elsif unsigned(accumulationCounter) = accumulationNumber - 1 then
---                 next_state <= divide;
---             end if;
-
---         when divide =>
---             enable_sig        <= '1';
---             enable_divide_sig <= '1';
---             reset_divide_sig  <= '0';
---             next_state        <= writeToRam;
-
---         when writeToRam =>
---             enable_sig            <= '1';
---             addrCounter_reset_sig <= '0';
---             reset_divide_sig      <= '0';
-
---             if reset = '0' or enable = '0' or unsigned(addrCounter) = ADDR_MAX then
---                 next_state <= idle;
---             end if;
-
---         when others =>
---             next_state <= idle;
---     end case;
--- end process comb_process;
 
 ----------------------------------------------------------------------------------
 -- Company:
@@ -65,7 +16,11 @@
 -- Revision:
 -- Revision 0.01 - File Created Thimote
 -- Additional Comments:
---
+-- Le code est pretty trash, jai trop essayer de recycler mais pour 1 ligne cela fonctionne bien avec 15-16 bits
+-- Run tb 
+-- cd C:\repo\mems_control_loop\scripts\simScripts
+-- source launchAverageToRamTb.tcl
+-- cree le Report.txt dans outputs
 ----------------------------------------------------------------------------------
 
 library ieee;
@@ -145,7 +100,8 @@ architecture behavioral of averageToRam is
   signal dbg_read_index : integer range 0 to 255;
   -- max number of line 128
   signal read_index_s : integer range 0 to 255;
-
+  signal counterAddr : std_logic_vector(15 downto 0) := (others =>'0');
+  signal clk_sig : STD_LOGIC;
 begin
 
   -- State Machine Process (Combinatorial)
@@ -163,7 +119,7 @@ begin
     enable_accureg    <= '0';
     enable_sig        <= '0';
     enable_divide_sig <= '0';
-
+clk_sig <= '0';
     -- Default Reset states (Active High based on your logic)
     accumulation_counter_reset_sig <= '1';
     addrcounter_reset_sig          <= '1';
@@ -219,9 +175,10 @@ begin
       when writetoram =>
 
         -- Override defaults
-        enable_sig            <= '1';
+        enable_sig            <= '0';
         addrcounter_reset_sig <= '0';
         reset_divide_sig      <= '0';
+        clk_sig <='1';
 
         -- Transition Logic
         if (enable = '0') then
@@ -243,7 +200,7 @@ begin
   stateprocess : process (clk, reset) is
   begin
 
-    if (reset = '0') then
+    if (reset = '1') then
       present_state <= idle;
     elsif rising_edge(clk) then
       present_state <= next_state;
@@ -256,20 +213,35 @@ begin
 
   -- counter pour RAM
 
-  addr : component up_counter
-    generic map (
-      n              => 8,
-      startofcounter => 0,
-      increment      => 4,
-      endcount       => (numofline - 1) * 4
-    )
-    port map (
-      clk     => clk,
-      reset   => addrcounter_reset_sig,
-      counter => addrcounter
-    );
+  -- addr : component up_counter
+  --   generic map (
+  --     n              => 8,
+  --     startofcounter => 0,
+  --     increment      => 4,
+  --     endcount       => (numofline - 1) * 4
+  --   )
+  --   port map (
+  --     clk     => clk,
+  --     reset   => addrcounter_reset_sig,
+  --     counter => addrcounter
+  --   );
 
-  addrb <= baseaddr & (7 downto 0 => '0') & addrcounter;
+  -- addrb <= baseaddr & (7 downto 0 => '0') & addrcounter;
+
+   -- clk_sig <= enable_sig and clk;
+    addr_true : UP_COUNTER
+    generic map(
+      N              => 16,
+      startOfCounter => 0,
+      increment      => 4,
+      endCount       => 65535)
+    port map
+    (
+      clk     => clk_sig,
+      reset   => reset,
+      counter => counterAddr(15 downto 0)
+    );
+    addrb <= baseAddr & counterAddr(15 downto 0);
 
   data : component up_counter
     generic map (

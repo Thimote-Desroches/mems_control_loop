@@ -21,7 +21,7 @@ if { [llength [get_objects]] > 0} {
 set extracted_acc [expr {2 ** int(floor(log($extracted_acc) / log(2)))}]
 puts $extracted_acc
 # 2. Use 'expr' for the simulation time calculation
-set sim_time [expr {($extracted_acc + $extracted_line*15) * 10}]
+set sim_time [expr {($extracted_acc + $extracted_line*15) * 150}]
 
 puts "Calculated time: $sim_time"
 

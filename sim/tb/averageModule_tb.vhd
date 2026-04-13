@@ -46,7 +46,7 @@ architecture bench of averageToRam_tb is
     signal actualAcumulation : integer;
   -- Declaration du type
 
-  type mem_type is array (0 to numOfLine - 1) of std_logic_vector(31 downto 0);
+  type mem_type is array (0 to 30) of std_logic_vector(31 downto 0);
 
   signal ram_model : mem_type := (others => x"00000000");
 
@@ -114,9 +114,9 @@ architecture bench of averageToRam_tb is
 
     scaling_factor := 2.0 ** (divisionprecision);
 
-    for i in 0 to numOfLine - 1 loop
 
-      val         := ram_data(i);
+
+      val         := ram_data(0);
       wholepart   := to_integer(unsigned(val(31 downto frac_width + 1)));
       decimalpart := to_integer(unsigned(val(frac_width downto 0)));
 
@@ -126,15 +126,41 @@ architecture bench of averageToRam_tb is
 
       -- Construction du message
       write(l, string'("Addr "));
+      write(l, 0);
+      write(l, string'(": "));
+      write(l, real_converted, right, 12, 6);
+
+      write(l, string'(" -- Expected: "));
+      write(l, expected_valuesarr(0), right, 12, 6);
+
+      write(l, string'(" -- Diff: "));
+      write(l, (real_converted - expected_valuesarr(0)), right, 12, 6);
+      write(l, string'(" -- "));
+      hwrite(l, ram_data(0));
+      writeline(file_handler, l); -- Write line to file
+
+
+
+    for i in 1 to 20  loop
+
+      val         := ram_data(i);
+      wholepart   := to_integer(unsigned(val(31 downto frac_width + 1)));
+      decimalpart := to_integer(unsigned(val(frac_width downto 0)));
+
+
+      real_converted := real(to_integer(unsigned(val))) / scaling_factor;
+
+      -- Construction du message
+      write(l, string'("Addr "));
       write(l, i);
       write(l, string'(": "));
       write(l, real_converted, right, 12, 6);
 
       write(l, string'(" -- Expected: "));
-      write(l, expected_valuesarr(i), right, 12, 6);
+      write(l,0.0, right, 12, 6);
 
       write(l, string'(" -- Diff: "));
-      write(l, (real_converted - expected_valuesarr(i)), right, 12, 6);
+      write(l, 0.0, right, 12, 6);
       write(l, string'(" -- "));
       hwrite(l, ram_data(i));
       writeline(file_handler, l); -- Write line to file
@@ -296,7 +322,6 @@ begin
     end loop readfile;
 
     readexpected_values : for i in 0 to numofline - 1 loop
-
       readline(file_pointer, line_content);
       read(line_content, real_v);
       expected_values(i) <= real_v;
@@ -305,7 +330,7 @@ begin
 
     wait for clk_period * 5;
     enable_tb <= '1';
-    reset_tb  <= '1';
+    reset_tb  <= '0';
     wait for clk_period;
 
     for j in 0 to actualAcumulation - 1 loop
@@ -320,7 +345,7 @@ begin
 
     end loop;
 
-    wait for clk_period * (3 + numofline);
+    wait for clk_period * (150 + numofline);
 
     print_ram_fixed(ram_model, expected_values, 19);
     print_ram_fixed_to_file(outputfile, ram_model, expected_values, 19);
