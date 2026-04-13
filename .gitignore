@@ -2,3 +2,4 @@ pynqZ2VivadoProject/*
 .vscode/launch.json
 outputs/dataIn/dataAverage.txt
 outputs/dataOut/Report.txt
+scripts/simScripts/NA/ps7_summary.html

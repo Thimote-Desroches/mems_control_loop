@@ -200,7 +200,7 @@ clk_sig <= '0';
   stateprocess : process (clk, reset) is
   begin
 
-    if (reset = '1') then
+    if (reset = '0') then
       present_state <= idle;
     elsif rising_edge(clk) then
       present_state <= next_state;
@@ -238,7 +238,7 @@ clk_sig <= '0';
     port map
     (
       clk     => clk_sig,
-      reset   => reset,
+      reset   => not reset,
       counter => counterAddr(15 downto 0)
     );
     addrb <= baseAddr & counterAddr(15 downto 0);

@@ -1,12 +1,12 @@
-## This file is a general .xdc for the PYNQ-Z2 board
-## To use it in a project:
-## - uncomment the lines corresponding to used pins
-## - rename the used ports (in each line, after get_ports) according to the top level signal names in the project
+### This file is a general .xdc for the PYNQ-Z2 board
+### To use it in a project:
+### - uncomment the lines corresponding to used pins
+### - rename the used ports (in each line, after get_ports) according to the top level signal names in the project
 
-## Clock signal 125 MHz
+### Clock signal 125 MHz
 
-#set_property -dict {PACKAGE_PIN H16 IOSTANDARD LVCMOS33} [get_ports CLK125MHZ]
-#create_clock -period 10.000 -name sys_clk_pin -waveform {0.000 5.000} -add [get_ports CLK125MHZ]
+#set_property -dict {PACKAGE_PIN H16 IOSTANDARD LVCMOS33} [get_ports clkIn]
+#create_clock -period 10.000 -name sys_clk_pin -waveform {0.000 5.000} -add [get_ports clkIn]
 
 ##Switches
 
@@ -24,7 +24,7 @@
 
 ###LEDs
 
-set_property -dict { PACKAGE_PIN R14   IOSTANDARD LVCMOS33 } [get_ports { ledLocked }];
+#set_property -dict { PACKAGE_PIN R14   IOSTANDARD LVCMOS33 } [get_ports { ledLocked }];
 
 #set_property -dict { PACKAGE_PIN P14   IOSTANDARD LVCMOS33 } [get_ports { ledEnable[0] }]; #IO_L6P_T0_34 Sch=led[1]
 ## You had this commented out before, but now you have a port named led0[0]
@@ -86,7 +86,7 @@ set_property -dict { PACKAGE_PIN R14   IOSTANDARD LVCMOS33 } [get_ports { ledLoc
 
 ##PmodB
 
-#set_property -dict {PACKAGE_PIN T11 IOSTANDARD LVCMOS33} [get_ports {sig2}]
+set_property -dict {PACKAGE_PIN T11 IOSTANDARD LVCMOS33} [get_ports {pmodA_1}]
 #set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets sig2_IBUF]
 #set_property -dict {PACKAGE_PIN W14 IOSTANDARD LVCMOS33} [get_ports {sig1}]
 #set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets sig1_IBUF]
@@ -171,8 +171,8 @@ set_property -dict { PACKAGE_PIN N17   IOSTANDARD LVCMOS33 } [get_ports { adcIn[
 ## Arduino I2C
 
 set_property -dict { PACKAGE_PIN P16   IOSTANDARD LVCMOS33 } [get_ports { adcIn[14] }]; #IO_L24N_T3_34 Sch=ar_scl
-set_property -dict { PACKAGE_PIN P15   IOSTANDARD LVCMOS33 } [get_ports { clk_in_alexis }]; #IO_L24P_T3_34 Sch=ar_sda
-set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets clk_in_alexis_IBUF]
+#set_property -dict { PACKAGE_PIN P15   IOSTANDARD LVCMOS33 } [get_ports { clk_in_alexis }]; #IO_L24P_T3_34 Sch=ar_sda
+#set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets clk_in_alexis_IBUF]
 
 ##Raspberry Digital I/O
 
