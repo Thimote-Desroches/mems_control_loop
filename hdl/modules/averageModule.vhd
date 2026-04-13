@@ -30,10 +30,10 @@ library ieee;
 
 entity averageToRam is
   generic (
-    numofbit           : integer                       := 9;
-    numofline          : integer                       := 20;
-    baseaddr           : std_logic_vector(15 downto 0) := x"A000";
-    accumulationnumber : integer                       := 2048;
+    numofbit           : integer                       := 16;
+    numofline          : integer                       := 1;
+    baseaddr           : std_logic_vector(15 downto 0) := x"4000";
+    accumulationnumber : integer                       := 1024;
     divisionprecision  : integer                       := 6
   );
   port (
