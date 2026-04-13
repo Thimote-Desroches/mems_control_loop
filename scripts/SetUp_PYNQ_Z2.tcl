@@ -28,5 +28,20 @@ add_files -fileset constrs_1 -norecurse ../constraints/PYNQ-Z2_loops_final.xdc
 
 
 
+# Source the block design script
+source ../scripts/blockDesign/averageBlockDesign_wClock.tcl
 
+# 1. Find the block design file dynamically
+set bd_file [get_files *averageBlockDesign_wClock.bd]
 
+# 2. Generate the wrapper and save its path to a variable
+set wrapper_path [make_wrapper -files $bd_file -top]
+
+# 3. Add the dynamically generated wrapper file to the project
+add_files -norecurse $wrapper_path
+
+# 4. Set the wrapper as the top-level module (highly recommended)
+set_property top averageBlockDesign_wClock_wrapper [current_fileset]
+
+# 5. Update compile order
+update_compile_order -fileset sources_1
